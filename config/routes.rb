@@ -18,9 +18,12 @@ Rails.application.routes.draw do
   root 'homes#index'
 
   resources :courses do
+    get :list
     member do
       get :select
       get :quit
+      get :openc
+      get :close
     end
     collection do
       get :list

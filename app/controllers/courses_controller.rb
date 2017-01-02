@@ -1,10 +1,24 @@
 class CoursesController < ApplicationController
 
   before_action :student_logged_in, only: [:select, :quit, :list]
-  before_action :teacher_logged_in, only: [:new, :create, :edit, :destroy, :update]
+  before_action :teacher_logged_in, only: [:new, :create, :edit, :destroy, :update, :openc, :close]
   before_action :logged_in, only: :index
 
   #-------------------------for teachers----------------------
+
+  def openc
+    @course = Course.find_by_id(params[:id])
+    @course.open = true
+    @course.save
+      redirect_to courses_path, flash: {:success => "已经成功开启该课程：#{@course.name}"}
+  end
+  
+  def close
+    @course = Course.find_by_id(params[:id])
+    @course.open = false
+    @course.save
+    redirect_to courses_path, flash: {:success => "已经成功关闭该课程:#{ @course.name}"}
+  end
 
   def new
     @course=Course.new
@@ -42,12 +56,22 @@ class CoursesController < ApplicationController
     flash={:success => "成功删除课程: #{@course.name}"}
     redirect_to courses_path, flash: flash
   end
+  
+  
 
   #-------------------------for students----------------------
 
   def list
     @course=Course.all
-    @course=@course-current_user.courses
+    @course= @course-current_user.courses
+    
+    @openarray = []
+    @course.each do |course| 
+            @openarray.push(course) if course.open
+    end
+    
+    @num_oppenarray=@openarray.length
+   
   end
 
   def select
@@ -97,8 +121,8 @@ class CoursesController < ApplicationController
   end
 
   def course_params
-    params.require(:course).permit(:course_code, :name, :course_type, :teaching_type, :exam_type,
-                                   :credit, :limit_num, :class_room, :course_time, :course_week)
+    params.require(:course).permit(:course_code, :name, :course_type, :teaching_type, :exam_type, 
+                                   :credit, :limit_num, :class_room, :course_time, :course_week,)
   end
 
 

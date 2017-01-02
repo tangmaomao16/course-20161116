@@ -19,7 +19,8 @@ module SessionsHelper
   def admin_logged_in?
     !current_user.nil? &&current_user.admin
   end
-
+  
+ 
   # 点击log_out,安全退出.只关闭浏览器时会保存cookie,安全退出后就没有了
   def log_out
     forget_user(current_user)
